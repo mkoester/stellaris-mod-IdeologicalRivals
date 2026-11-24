@@ -50,7 +50,9 @@ the `zz_` prefix. That ascension perks follow this rule is **untested**.
   (a crisis already) and the Legendary Leader origins (fixed authority).
 - `irv.10` (monthly, rivals only) founds the ideology through vanilla
   `generate_ideology_from_faction_or_ethic`. It waits until the rival knows another empire,
-  because vanilla `can_generate_ideology` needs contact.
+  because vanilla `can_generate_ideology` needs contact. The vanilla effect is itself 3 levels
+  deep, so `irv_found_ideology` calls it directly, with no helper in between. Scripted effects stop
+  running beyond 5 levels (modding insights doc 07); count the levels before adding one.
 - `irv.20` (`on_ascension_perk_picked`): when the player takes Force of Will, every rival gets
   `irv_rival_redoubled` and `irv.10` adds `@irv_willpower_monthly` willpower each month. No
   modifier scales objective rewards: `country_willpower_produces_mult` exists, but nothing

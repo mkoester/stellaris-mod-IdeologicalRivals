@@ -190,24 +190,41 @@ irv_shape_rival = {
 
 # Found the rival's ideology from its primary ethic (vanilla generate_ideology_from_faction_or_ethic,
 # common/scripted_effects/forceofwill_scripted_effects.txt). Scope: rival.
+# Inlined per ethic, no helper effect: the vanilla chain is 3 levels deep (from_faction_or_ethic →
+# from_faction → generate_ideology), and scripted effects stop running beyond 5 (modding insights,
+# doc 07). This way irv.10 → here → vanilla stays at 4.
 irv_found_ideology = {
-	irv_found_ideology_for = { E = egalitarian }
-	irv_found_ideology_for = { E = authoritarian }
-	irv_found_ideology_for = { E = xenophile }
-	irv_found_ideology_for = { E = xenophobe }
-	irv_found_ideology_for = { E = pacifist }
-	irv_found_ideology_for = { E = militarist }
-	irv_found_ideology_for = { E = spiritualist }
-	irv_found_ideology_for = { E = materialist }
-}
-
-irv_found_ideology_for = {
 	if = {
-		limit = {
-			has_country_flag = irv_primary_$E$
-			NOT = { exists = ideology }
-		}
-		generate_ideology_from_faction_or_ethic = { ETHIC = $E$ }
+		limit = { has_country_flag = irv_primary_egalitarian NOT = { exists = ideology } }
+		generate_ideology_from_faction_or_ethic = { ETHIC = egalitarian }
+	}
+	if = {
+		limit = { has_country_flag = irv_primary_authoritarian NOT = { exists = ideology } }
+		generate_ideology_from_faction_or_ethic = { ETHIC = authoritarian }
+	}
+	if = {
+		limit = { has_country_flag = irv_primary_xenophile NOT = { exists = ideology } }
+		generate_ideology_from_faction_or_ethic = { ETHIC = xenophile }
+	}
+	if = {
+		limit = { has_country_flag = irv_primary_xenophobe NOT = { exists = ideology } }
+		generate_ideology_from_faction_or_ethic = { ETHIC = xenophobe }
+	}
+	if = {
+		limit = { has_country_flag = irv_primary_pacifist NOT = { exists = ideology } }
+		generate_ideology_from_faction_or_ethic = { ETHIC = pacifist }
+	}
+	if = {
+		limit = { has_country_flag = irv_primary_militarist NOT = { exists = ideology } }
+		generate_ideology_from_faction_or_ethic = { ETHIC = militarist }
+	}
+	if = {
+		limit = { has_country_flag = irv_primary_spiritualist NOT = { exists = ideology } }
+		generate_ideology_from_faction_or_ethic = { ETHIC = spiritualist }
+	}
+	if = {
+		limit = { has_country_flag = irv_primary_materialist NOT = { exists = ideology } }
+		generate_ideology_from_faction_or_ethic = { ETHIC = materialist }
 	}
 }
 
