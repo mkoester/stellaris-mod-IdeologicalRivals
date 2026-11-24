@@ -46,9 +46,10 @@ Hence (the user's decision, 2026-11-24), set in `irv_choose_aim` as a country fl
 independent and has no ambition yet. It runs monthly (`irv.10`) and right after each of the rival's
 perk picks (`irv.20`), so that a 4th pick cannot be another ambition first. `add_ascension_perk`
 skips `possible`, so the Force of Will branch checks vanilla's conditions itself. The perk does
-**not** replace a pick (`on_ascension_perk_picked` does not say which perk was picked), so it may be
-a bonus perk. Only Force of Will rivals found an ideology. Players in contact get `irv.22`, worded
-per ambition.
+**not** replace a pick (`on_ascension_perk_picked` does not say which perk was picked): it is a
+bonus perk, filling a slot whether one is unlocked or not (run C). The grant also fires
+`on_ascension_perk_picked` itself. Only Force of Will rivals found an ideology. Players in contact
+get `irv.22`, worded per ambition.
 
 ## How it works
 
@@ -86,6 +87,14 @@ per ambition.
   exists, but nothing produces willpower. For a rival, `irv.20` runs the ambition grant.
 - `irv_rival_drive` (+10 % unity) on every rival helps it reach the 3 perks. It also carries an
   opinion of −50 toward the player.
+
+## Design questions (open, from run C)
+
+- The crisis rivals stall where vanilla's AI would not have chosen the path: Become the Crisis
+  earns menace only by war, Hyperthermia's level 1 is a 25000-physics project. Options: a monthly
+  boost like Force of Will's willpower (`add_resource` reaches `menace`, `entropy_crystals`?), help
+  with the first project, or nothing (the grant comes late in a natural game). Decide after a
+  natural-pace run.
 
 ## Script pitfalls (seen in run B)
 

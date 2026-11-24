@@ -80,3 +80,52 @@ mod as of the ambitions rework, before the DLC handling):**
   Unidentified Empire" once for 3 rivals, and `secondary_authoritarian` once. Every log line now
   names its rival (number, or capital in events).
 
+
+**Run C (2026-11-24, 4.6, huge galaxy, Ensign, player egalitarian/xenophile/pacifist, all
+three DLCs; the mod with regular-empires-only candidates and the civic refill; saves
+`unitednationsofearth4_-337465913/2200.01.01_irv-b-0.sav`, `autosave_2200.02.01.sav`, screenshots
+`~/Pictures/Screenshots/screenshot_2026-11-24_21-15-24`, `21-15-38`, `21-16-04`):**
+- Item 1, passed: no `irv` line in `error.log`, no `change_government` failure.
+- Item 2, passed: Authority of Ba Grax (capital Backatta, fanatic xenophobe + authoritarian,
+  `aim_hyperthermia`), United Spuxulac Authority (Greater Spuxulac, fanatic militarist +
+  authoritarian, `aim_crisis`), Falleran Star Dynasty (Cradle of Decay, fanatic materialist +
+  authoritarian, `aim_fow`). All dictatorial with two civics, regular origins. Rival 1 has the
+  highest spread among the candidates (1146); the only empire above it, Bothria (1167), is a hive
+  mind.
+- Item 5, passed: on 2200.02.01 only rival 3 has an ideology, and it is its custodian.
+- Seen, not a mod bug: rivals 1 and 2 got rulers with the same name (Executor Kul-Pox, two leaders
+  of two species from one name list), both new from `change_government` in the same tick.
+- Open: the diplomacy screen shows a "?" icon beside Ba Grax's government; Spuxulac, with the
+  same government type and authority in the save, shows the dictatorial icon.
+- `irv.900`'s flag lines read `rival1$:primary_xenophobe$`: cosmetic.
+- Item 6, passed (2200.06.01, `irv.902`; autosave 2200.08.01): Ba Grax got Galactic Hyperthermia,
+  Spuxulac Become the Crisis, Falleran Force of Will, each beside its three test perks, each with
+  a `crisis_progression`. **The grant came at once**, inside `irv.902`: `add_ascension_perk` fires
+  `on_ascension_perk_picked`, so `irv.20` ran it. Ba Grax's views (`play`, screenshots
+  `21-37-03`, `21-37-12`, `21-37-32`): Ambition tab Hyperthermia level 1 "Concern" with its
+  objectives; the four perks fill 4 of 8 perk slots, the other 4 locked, with no tradition adopted.
+- The two crisis rivals had founded ideologies through `devtools.21` (a test shortcut), so they
+  are custodians, which vanilla's `possible` would refuse. The grant gave them the crisis anyway;
+  Ba Grax keeps its ideology (Backattan Nativism, faction, momentum) beside Hyperthermia. Nothing
+  in `error.log`.
+- Item 8, passed: three `irv.22` popups, one per rival, each with its ambition's text (screenshot
+  `21-35-33`).
+- Item 7, passed (saves `2200.08.01_irv-b-4.sav`, `autosave_2200.09.01.sav`, screenshots
+  `21-39-48`, `21-40-17`): `activate_ascension_perk ap_force_of_will` for the player fires
+  `on_ascension_perk_picked` too; `irv.21` appeared, all three rivals carry `irv_rival_redoubled`,
+  and the Force of Will rival's willpower went 0 → 25 in the month (no objective paid). The
+  crisis rivals get the marker but no currency, as designed. Vanilla's own Force of Will texts
+  read "the pacifist values of , …": the player holds no ideology (console perk), a vanilla gap.
+- Item 9, **runs, but the crisis paths stall** (`fast_forward 1800`, save `2205.10.01.sav`; nothing
+  in `error.log`):
+  - Force of Will (Falleran): willpower 1025 → 2568 in 60 months, of which 1500 is the mod's
+    +25/month and ~43 its own objectives. Level 2 holds; level 3 needs its next project.
+  - Become the Crisis (Spuxulac): level 1, **0 menace** in five years. Menace comes from its
+    objectives (wars, conquest, destruction); a rival at peace earns none. Vanilla's AI takes this
+    path only with 10 % of the galaxy (`ai_weight`).
+  - Galactic Hyperthermia (Ba Grax): **no level yet**. Level 1 needs the special project
+    `INF_CRISIS_ENTROPY`, **25000 physics** (`common/special_projects/00_projects_infernals.txt`); Ba
+    Grax has it open. An early AI needs decades for it.
+  - Granted at 2200 by the test shortcut, the paths had no economy behind them; a natural grant
+    comes with the third perk (decades later). Whether they then move is the open question: see
+    "Design questions" in `AGENTS.md`.
