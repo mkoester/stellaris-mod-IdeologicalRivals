@@ -16,7 +16,8 @@ Overrides nothing from vanilla. Add it at game start; it does nothing in a runni
 
 ## Layout
 
-- `ideological_rivals/`: the mod (only this folder ships).
+- `ideological_rivals/`: the mod (only this folder ships). Its `thumbnail.png` is rendered from
+  `assets/thumbnail.svg`, which `assets/thumbnail.py` generates (our own art).
   - `common/scripted_effects/irv_effects.txt`: choosing and shaping rivals, their ambition,
     founding their ideology.
   - `common/on_actions/irv_on_actions.txt`: `on_game_start_country`, `on_monthly_pulse_country`,
