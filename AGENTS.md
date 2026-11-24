@@ -43,7 +43,7 @@ the `zz_` prefix. That ascension perks follow this rule is **untested**.
   rival holds yet, taking the player's fanatic ethic first. The secondary is the opposite of
   another player ethic on another axis. If none is left (a gestalt player, or more rivals than
   player axes), a random one is drawn from the free axes. Then `clear_ethos`, `country_add_ethic`,
-  75 % of the pops move to the primary ethic, and the authority is repaired (`irv_fix_authority`;
+  75 % of each pop group moves to the primary ethic (`pop_change_ethic` takes percent, 0–100), and the authority is repaired (`irv_fix_authority`;
   the rules come from `common/governments/authorities/00_authorities.txt`) with
   `remove_invalid_civics`.
 - Candidates exclude gestalts (they cannot be fanatic), Lost Makers (own ideology), Endbringers
