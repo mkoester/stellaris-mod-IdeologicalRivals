@@ -24,7 +24,8 @@ irv_choose_rival = {
 
 # --- Ethics -----------------------------------------------------------------------------------
 
-# Primary: the opposite of one of the player's ethics whose axis no rival has taken yet.
+# Primary: the opposite of one of the player's ethics whose axis no rival has taken yet, and
+# whose ambition this game offers (irv_reachable_*).
 # Scope: rival. PLAYER = the player's ethic key, AXIS = its axis, OPP = the opposite ethic.
 irv_try_primary = {
 	if = {
@@ -32,6 +33,7 @@ irv_try_primary = {
 			NOT = { has_country_flag = irv_primary_done }
 			NOT = { has_global_flag = irv_axis_$AXIS$ }
 			event_target:irv_player = { has_ethic = $PLAYER$ }
+			irv_reachable_$OPP$ = { E = $OPP$ }
 		}
 		set_country_flag = irv_primary_done
 		set_country_flag = irv_axis_$AXIS$
@@ -60,8 +62,9 @@ irv_try_secondary = {
 }
 
 # Fallback when the player offers no axis left (gestalt player, or more rivals than player axes).
-# Scope: rival. KIND = primary or secondary; a primary also claims the axis globally. Never an
-# ethic the player holds, never an authoritarian primary (irv_ethic_barred_*).
+# Scope: rival. KIND = primary, secondary or fallback; a primary or fallback also claims the axis
+# globally. Never an ethic the player holds; a primary only with a reachable ambition. A fallback
+# is the primary of last resort, when no reachable one is left: the rival pursues no ambition.
 irv_random_ethic = {
 	random_list = {
 		1 = {
@@ -72,7 +75,6 @@ irv_random_ethic = {
 		1 = {
 			modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = authority } }
 			modifier = { factor = 0 irv_ethic_barred_$KIND$ = { E = authoritarian } }
-			modifier = { factor = 0 irv_authoritarian_barred_$KIND$ = { E = authoritarian } }
 			irv_set_random_$KIND$ = { AXIS = authority E = authoritarian }
 		}
 		1 = {
@@ -109,6 +111,13 @@ irv_random_ethic = {
 }
 
 irv_set_random_primary = {
+	set_country_flag = irv_primary_done
+	set_country_flag = irv_primary_$E$
+	set_country_flag = irv_axis_$AXIS$
+	set_global_flag = irv_axis_$AXIS$
+}
+
+irv_set_random_fallback = {
 	set_country_flag = irv_primary_done
 	set_country_flag = irv_primary_$E$
 	set_country_flag = irv_axis_$AXIS$
@@ -186,6 +195,7 @@ irv_fix_authority = {
 # Pick and apply a rival's ethics, then its ambition. Scope: rival. The player's fanatic ethic is
 # used first. Authoritarian is never a primary: vanilla Force of Will bars an authoritarian
 # ideology, and no other ambition suits it, so an egalitarian player is opposed by secondaries.
+# Likewise militarist without Nemesis, xenophobe without Infernals, any other without Willpower.
 irv_shape_rival = {
 	irv_try_primary = { PLAYER = ethic_fanatic_authoritarian AXIS = authority OPP = egalitarian }
 	irv_try_primary = { PLAYER = ethic_fanatic_xenophile AXIS = xeno OPP = xenophobe }
@@ -204,6 +214,10 @@ irv_shape_rival = {
 	if = {
 		limit = { NOT = { has_country_flag = irv_primary_done } }
 		irv_random_ethic = { KIND = primary }
+	}
+	if = {
+		limit = { NOT = { has_country_flag = irv_primary_done } }
+		irv_random_ethic = { KIND = fallback }
 	}
 	irv_try_secondary = { ETHIC = egalitarian AXIS = authority OPP = authoritarian }
 	irv_try_secondary = { ETHIC = authoritarian AXIS = authority OPP = egalitarian }
@@ -226,24 +240,22 @@ irv_shape_rival = {
 # Which ambition the rival will pursue. Scope: rival, after its ethics are set.
 # Militarist: Become the Crisis; xenophobe: Galactic Hyperthermia (vanilla bars both from
 # xenophiles and pacifists, and its AI takes them only as militarist or xenophobe); any other
-# primary: Force of Will. Without the crisis's DLC, or on Civilian difficulty (vanilla
-# blocks_disruptive_gameplay), a crisis rival pursues none and stays a rival only.
+# primary: Force of Will. A primary without a reachable ambition (a fallback, see
+# irv_random_ethic) gets none: the empire stays a rival only.
 irv_choose_aim = {
 	if = {
-		limit = { has_country_flag = irv_primary_militarist }
-		if = {
-			limit = { has_nemesis = yes blocks_disruptive_gameplay = no }
-			set_country_flag = irv_aim_crisis
-		}
+		limit = { has_country_flag = irv_primary_militarist irv_reachable_militarist = { E = militarist } }
+		set_country_flag = irv_aim_crisis
 	}
 	else_if = {
-		limit = { has_country_flag = irv_primary_xenophobe }
-		if = {
-			limit = { has_infernals = yes blocks_disruptive_gameplay = no }
-			set_country_flag = irv_aim_hyperthermia
-		}
+		limit = { has_country_flag = irv_primary_xenophobe irv_reachable_xenophobe = { E = xenophobe } }
+		set_country_flag = irv_aim_hyperthermia
 	}
-	else = {
+	else_if = {
+		limit = {
+			NOR = { has_country_flag = irv_primary_militarist has_country_flag = irv_primary_xenophobe }
+			irv_reachable_fow = yes
+		}
 		set_country_flag = irv_aim_fow
 	}
 }

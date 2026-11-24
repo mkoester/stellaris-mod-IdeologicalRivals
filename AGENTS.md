@@ -1,6 +1,6 @@
 # Ideological Rivals
 
-Stellaris mod (game **4.6.x**, Force of Will DLC; Nemesis and Infernals for the crisis rivals),
+Stellaris mod (game **4.6.x**; each ambition needs its DLC: Willpower, Nemesis, Infernals),
 private, working title, started 2026-11-24, first test run 2026-11-24. At game start 1–3 AI
 empires become the player's ideological rivals. They sit far from the player and from each
 other, they get fanatic ethics opposed to the player's, and each pursues an **ambition** that fits
@@ -35,8 +35,12 @@ Hence (the user's decision, 2026-11-24), set in `irv_choose_aim` as a country fl
 - primary xenophobe → `irv_aim_hyperthermia` (needs Infernals);
 - any other primary → `irv_aim_fow`.
 - **Authoritarian is never a primary**: it opposes an egalitarian player as a secondary ethic only.
-- With the DLC missing, or on Civilian (vanilla `blocks_disruptive_gameplay`), a crisis rival
-  pursues no ambition.
+- **A primary needs a reachable ambition** (`irv_reachable_<ethic>`): militarist needs Nemesis,
+  xenophobe Infernals (neither on Civilian, vanilla `blocks_disruptive_gameplay`), any other
+  Willpower with ideologies on. Otherwise that ethic opposes the player as a secondary only, like
+  authoritarian. If nothing reachable is left, a random primary (`KIND = fallback`) without an
+  ambition: the empire stays a rival only. A descriptor cannot declare a DLC: name them in the
+  store text.
 
 `irv_grant_ambition` adds the perk with `add_ascension_perk` once the rival holds 3 perks, is
 independent and has no ambition yet. It runs monthly (`irv.10`) and right after each of the rival's

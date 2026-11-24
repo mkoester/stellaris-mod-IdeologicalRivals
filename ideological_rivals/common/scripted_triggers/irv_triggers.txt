@@ -33,13 +33,18 @@ irv_rival_needs_ideology = {
 # A primary may not reuse an axis another rival holds; a secondary may not reuse its own primary's.
 irv_axis_blocked_primary = { has_global_flag = irv_axis_$AXIS$ }
 irv_axis_blocked_secondary = { has_country_flag = irv_axis_$AXIS$ }
+irv_axis_blocked_fallback = { has_global_flag = irv_axis_$AXIS$ }
 
-# For irv_random_ethic: an ethic the player holds is no opposition, and an authoritarian primary
-# is never chosen (see irv_shape_rival). Scope: rival.
-irv_ethic_barred_primary = { irv_player_holds = { E = $E$ } }
+# For irv_random_ethic: an ethic the player holds is no opposition; a primary needs a reachable
+# ambition. Scope: rival.
+irv_ethic_barred_primary = {
+	OR = {
+		irv_player_holds = { E = $E$ }
+		NOT = { irv_reachable_$E$ = { E = $E$ } }
+	}
+}
 irv_ethic_barred_secondary = { irv_player_holds = { E = $E$ } }
-irv_authoritarian_barred_primary = { always = yes }
-irv_authoritarian_barred_secondary = { always = no }
+irv_ethic_barred_fallback = { irv_player_holds = { E = $E$ } }
 irv_player_holds = {
 	event_target:irv_player = {
 		OR = {
@@ -48,3 +53,17 @@ irv_player_holds = {
 		}
 	}
 }
+
+# Does this game offer the ambition a fanatic $E$ rival would pursue? Militarist: Become the
+# Crisis (Nemesis); xenophobe: Galactic Hyperthermia (Infernals); both barred on Civilian (vanilla
+# blocks_disruptive_gameplay). Authoritarian: none (Force of Will bars it). Any other: Force of
+# Will (Willpower, ideologies on). The E parameter only lets CWTools read the call.
+irv_reachable_militarist = { has_nemesis = yes blocks_disruptive_gameplay = no }
+irv_reachable_xenophobe = { has_infernals = yes blocks_disruptive_gameplay = no }
+irv_reachable_authoritarian = { always = no }
+irv_reachable_fow = { has_force_of_will_dlc = yes ideologies_enabled = yes }
+irv_reachable_egalitarian = { irv_reachable_fow = yes }
+irv_reachable_xenophile = { irv_reachable_fow = yes }
+irv_reachable_pacifist = { irv_reachable_fow = yes }
+irv_reachable_spiritualist = { irv_reachable_fow = yes }
+irv_reachable_materialist = { irv_reachable_fow = yes }

@@ -1,7 +1,9 @@
 # Ideological Rivals
 
-A Stellaris mod (game **4.6.x**, needs the Force of Will DLC; Nemesis and Infernals for the crisis
-rivals). In development.
+A Stellaris mod (game **4.6.x**). In development. Each ambition needs its DLC: Force of Will
+needs **Willpower**, Become the Crisis **Nemesis**, Galactic Hyperthermia the **Infernals** species
+pack. A rival only gets ethics whose ambition your game offers; with none of the three, rivals
+pursue no ambition.
 
 At the start of a game, one to three AI empires become your **ideological rivals**: one in a
 small galaxy, two in a medium or large one, three in a huge one. They start far away from you

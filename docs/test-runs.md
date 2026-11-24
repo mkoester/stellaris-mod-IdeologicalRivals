@@ -32,6 +32,8 @@ each run, check `error.log` for `irv` lines.
    its ambition.
 9. **Crisis paths run**: after a few years with `fast_forward`, the crisis rivals gain menace and
    heat (their level in the Situation Log), and nothing in `error.log` names the paths.
+10. **Missing DLC** (a game with Nemesis or Infernals disabled in the launcher's DLC list): no
+    rival gets that crisis's ethic as its primary; it appears as a secondary at most.
 
 ## Results
 
