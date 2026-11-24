@@ -88,13 +88,24 @@ get `irv.22`, worded per ambition.
 - `irv_rival_drive` (+10 % unity) on every rival helps it reach the 3 perks. It also carries an
   opinion of −50 toward the player.
 
-## Design questions (open, from run C)
+## Design questions (from run C)
 
 - The crisis rivals stall where vanilla's AI would not have chosen the path: Become the Crisis
-  earns menace only by war, Hyperthermia's level 1 is a 25000-physics project. Options: a monthly
-  boost like Force of Will's willpower (`add_resource` reaches `menace`, `entropy_crystals`?), help
-  with the first project, or nothing (the grant comes late in a natural game). Decide after a
-  natural-pace run.
+  earns menace only by war, Hyperthermia's level 1 is a 25000-physics project. Options were a
+  monthly boost like Force of Will's willpower, help with the first project, or nothing.
+  **Decided 2026-11-24 (user): nothing for now.** The test granted the paths in 2200; a natural
+  grant comes with the third perk, decades later. Judge in a natural-pace run, then revisit.
+
+## Status and next (2026-11-24)
+
+Runs A–C done (`docs/test-runs.md`): checklist items 1–9 pass; item 9 shows the stall above. Next:
+- a **natural-pace run**: no `irv.902`, play or `fast_forward` until a rival reaches three perks
+  on its own; see whether its path moves (the design question).
+- item 10 (a DLC disabled in the launcher);
+- run A's spread miss (a farther valid candidate not chosen; unexplained, run B and C were right);
+- cosmetic: `irv.900`'s flag lines print stray `$` (`rival1$:primary_xenophobe$`), and Ba Grax's
+  government showed a "?" icon in the diplomacy screen (run C, not understood).
+- Store texts, Discord forum and publishing are not started; the thumbnail is done.
 
 ## Script pitfalls (seen in run B)
 
