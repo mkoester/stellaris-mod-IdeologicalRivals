@@ -69,7 +69,9 @@ the `zz_` prefix. That ascension perks follow this rule is **untested**.
   `remove_ascension_perk` + `cancel_crisis` (both in `effects.log`) undo it, but the other
   ambition's `on_enabled` has already run.
 - If another empire is custodian of the same ideology and the rival adopts it, the rival
-  is not custodian, and the perk stays closed.
+  is not custodian, and the perk stays closed. AI adoption is a yearly roll
+  (`forceofwill.1112`, only while the empire has no ideology). A rival founds its own within a
+  month of first contact (`irv.10`), so the window is that month.
 - Multiplayer: the rivals oppose the first human player only.
 
 ## Static check
