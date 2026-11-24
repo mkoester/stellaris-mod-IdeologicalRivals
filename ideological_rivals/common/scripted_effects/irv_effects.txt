@@ -7,6 +7,25 @@
 #   spirit     spiritualist / materialist
 # event_target:irv_player is the human player the rivals are chosen against.
 
+# --- What this game offers -------------------------------------------------------------------
+
+# Set a global flag irv_reachable_<ethic> for each ethic whose ambition this game offers
+# (irv_reachable_* triggers). Once, in irv.1, before the rivals are chosen. Flags, not trigger
+# calls with a $PARAM$ name: CWTools cannot read those, and the game needs no parameter there.
+irv_init_reachable = {
+	if = { limit = { irv_reachable_militarist = yes } set_global_flag = irv_reachable_militarist }
+	if = { limit = { irv_reachable_xenophobe = yes } set_global_flag = irv_reachable_xenophobe }
+	if = {
+		limit = { irv_reachable_fow = yes }
+		set_global_flag = irv_reachable_fow
+		set_global_flag = irv_reachable_egalitarian
+		set_global_flag = irv_reachable_xenophile
+		set_global_flag = irv_reachable_pacifist
+		set_global_flag = irv_reachable_spiritualist
+		set_global_flag = irv_reachable_materialist
+	}
+}
+
 # --- Choosing a rival -------------------------------------------------------------------------
 
 # Make the best-spread candidate rival number $N$. Scope: none (global). Needs irv_cap_0..N-1.
@@ -25,7 +44,7 @@ irv_choose_rival = {
 # --- Ethics -----------------------------------------------------------------------------------
 
 # Primary: the opposite of one of the player's ethics whose axis no rival has taken yet, and
-# whose ambition this game offers (irv_reachable_*).
+# whose ambition this game offers (global flag irv_reachable_<ethic>, set by irv_init_reachable).
 # Scope: rival. PLAYER = the player's ethic key, AXIS = its axis, OPP = the opposite ethic.
 irv_try_primary = {
 	if = {
@@ -33,7 +52,7 @@ irv_try_primary = {
 			NOT = { has_country_flag = irv_primary_done }
 			NOT = { has_global_flag = irv_axis_$AXIS$ }
 			event_target:irv_player = { has_ethic = $PLAYER$ }
-			irv_reachable_$OPP$ = { E = $OPP$ }
+			has_global_flag = irv_reachable_$OPP$
 		}
 		set_country_flag = irv_primary_done
 		set_country_flag = irv_axis_$AXIS$
@@ -190,6 +209,13 @@ irv_fix_authority = {
 	else = {
 		change_government = { remove_invalid_civics = yes cooldown = no }
 	}
+	# Civics the new ethics forbid are gone; refill as vanilla's ideological rebels do
+	# (forceofwill_scripted_effects.txt, setup_ideological_rebels_government). Run B: a Lost
+	# Colony rival kept no civic for a month.
+	if = {
+		limit = { has_unused_civic_points > 0 }
+		change_government = { civics = random cooldown = no }
+	}
 }
 
 # Pick and apply a rival's ethics, then its ambition. Scope: rival. The player's fanatic ethic is
@@ -244,17 +270,17 @@ irv_shape_rival = {
 # irv_random_ethic) gets none: the empire stays a rival only.
 irv_choose_aim = {
 	if = {
-		limit = { has_country_flag = irv_primary_militarist irv_reachable_militarist = { E = militarist } }
+		limit = { has_country_flag = irv_primary_militarist has_global_flag = irv_reachable_militarist }
 		set_country_flag = irv_aim_crisis
 	}
 	else_if = {
-		limit = { has_country_flag = irv_primary_xenophobe irv_reachable_xenophobe = { E = xenophobe } }
+		limit = { has_country_flag = irv_primary_xenophobe has_global_flag = irv_reachable_xenophobe }
 		set_country_flag = irv_aim_hyperthermia
 	}
 	else_if = {
 		limit = {
 			NOR = { has_country_flag = irv_primary_militarist has_country_flag = irv_primary_xenophobe }
-			irv_reachable_fow = yes
+			has_global_flag = irv_reachable_fow
 		}
 		set_country_flag = irv_aim_fow
 	}
@@ -288,9 +314,22 @@ irv_grant_ambition = {
 			}
 			add_ascension_perk = ap_force_of_will
 		}
+		# No [This.…] in a scripted effect: its [ ] is parameter syntax ("Invalid macro entry").
+		# One text per ambition: game.log drops a line identical to an earlier one.
+		if = {
+			limit = { has_ascension_perk = ap_become_the_crisis }
+			log = "IRV ambition granted: Become the Crisis"
+		}
+		if = {
+			limit = { has_ascension_perk = ap_galactic_hyperthermia }
+			log = "IRV ambition granted: Galactic Hyperthermia"
+		}
+		if = {
+			limit = { has_ascension_perk = ap_force_of_will }
+			log = "IRV ambition granted: Force of Will"
+		}
 		if = {
 			limit = { has_ambition = yes }
-			log = "IRV ambition granted: [This.GetName]"
 			irv_announce = yes
 		}
 	}
@@ -355,10 +394,58 @@ irv_found_ideology = {
 
 # --- Test helpers -----------------------------------------------------------------------------
 
-# Log one of the rival's choice flags (irv.900). Scope: rival.
+# Log one of rival N's choice flags (irv.900). Scope: rival. N keeps the lines distinct: game.log
+# drops a line identical to an earlier one (run B), and a scripted effect cannot print a name.
 irv_log_flag = {
 	if = {
 		limit = { has_country_flag = irv_$F$ }
-		log = "IRV   $F$"
+		log = "IRV   rival $N$: $F$"
+	}
+}
+
+irv_log_flags = {
+	irv_log_flag = { N = $N$ F = primary_egalitarian }
+	irv_log_flag = { N = $N$ F = primary_authoritarian }
+	irv_log_flag = { N = $N$ F = primary_xenophile }
+	irv_log_flag = { N = $N$ F = primary_xenophobe }
+	irv_log_flag = { N = $N$ F = primary_pacifist }
+	irv_log_flag = { N = $N$ F = primary_militarist }
+	irv_log_flag = { N = $N$ F = primary_spiritualist }
+	irv_log_flag = { N = $N$ F = primary_materialist }
+	irv_log_flag = { N = $N$ F = secondary_egalitarian }
+	irv_log_flag = { N = $N$ F = secondary_authoritarian }
+	irv_log_flag = { N = $N$ F = secondary_xenophile }
+	irv_log_flag = { N = $N$ F = secondary_xenophobe }
+	irv_log_flag = { N = $N$ F = secondary_pacifist }
+	irv_log_flag = { N = $N$ F = secondary_militarist }
+	irv_log_flag = { N = $N$ F = secondary_spiritualist }
+	irv_log_flag = { N = $N$ F = secondary_materialist }
+	irv_log_flag = { N = $N$ F = aim_crisis }
+	irv_log_flag = { N = $N$ F = aim_hyperthermia }
+	irv_log_flag = { N = $N$ F = aim_fow }
+}
+
+# Rival N's flags, ideology and ambition (irv.900). Scope: rival.
+irv_log_rival = {
+	irv_log_flags = { N = $N$ }
+	if = {
+		limit = { exists = ideology }
+		log = "IRV   rival $N$: has an ideology"
+	}
+	if = {
+		limit = { exists = ideology ideology = { is_ideology_custodian = prev } }
+		log = "IRV   rival $N$: custodian of it"
+	}
+	if = {
+		limit = { has_ascension_perk = ap_force_of_will }
+		log = "IRV   rival $N$: has Force of Will"
+	}
+	if = {
+		limit = { has_ascension_perk = ap_become_the_crisis }
+		log = "IRV   rival $N$: has Become the Crisis"
+	}
+	if = {
+		limit = { has_ascension_perk = ap_galactic_hyperthermia }
+		log = "IRV   rival $N$: has Galactic Hyperthermia"
 	}
 }

@@ -66,9 +66,15 @@ per ambition.
   75 % of each pop group moves to the primary ethic (`pop_change_ethic` takes percent, 0–100), and the authority is repaired (`irv_fix_authority`;
   the rules come from `common/governments/authorities/00_authorities.txt`) with
   `remove_invalid_civics`.
-- Candidates exclude gestalts (they cannot be fanatic), Lost Makers (own ideology), Endbringers
-  (a crisis already), Slavers (barred from both crises) and the Legendary Leader origins (fixed
-  authority). A random ethic is never one the player holds.
+- Candidates are **regular empires only** (`irv_can_be_rival`): no gestalt (cannot be fanatic),
+  no non-playable origin (vanilla `01_origins_non_playable.txt`: scripted empires such as fallen
+  empires, pre-FTL, Khan successors, NPC hegemons, Slavers), and no origin whose `possible` names
+  an ethic (`00_origins.txt`): new ethics would break it, and `change_government` fails (run B,
+  Forever Cruise). Also no Lost Makers (own ideology) or Legendary Leader origins (fixed
+  authority). After a game update, re-list both groups of origins. A random ethic is never one
+  the player holds.
+- `irv_fix_authority` refills civics with `civics = random` when civic points are left unused:
+  `remove_invalid_civics` once left a rival with none (run B).
 - `irv.10` (monthly, rivals only) founds a Force of Will rival's ideology through vanilla
   `generate_ideology_from_faction_or_ethic`. It waits until the rival knows another empire,
   because vanilla `can_generate_ideology` needs contact. The vanilla effect is itself 3 levels
@@ -80,6 +86,16 @@ per ambition.
   exists, but nothing produces willpower. For a rival, `irv.20` runs the ambition grant.
 - `irv_rival_drive` (+10 % unity) on every rival helps it reach the 3 perks. It also carries an
   opinion of −50 toward the player.
+
+## Script pitfalls (seen in run B)
+
+- A scripted trigger called with a parameter its body does not use fails to compile ("missing
+  args"). Call it with `= yes`. CWTools cannot read a `$PARAM$`-built trigger name with `= yes`,
+  so ambition reachability is read once into global flags (`irv_init_reachable`).
+- No `[This.…]` in a scripted effect's `log`: there `[ ]` is parameter syntax ("Invalid macro
+  entry"). Print names from events.
+- `game.log` drops a line identical to an earlier one: make every log line unique (rival number,
+  capital name).
 
 ## Known gaps (by design, until test runs say otherwise)
 

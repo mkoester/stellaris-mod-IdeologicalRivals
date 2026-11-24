@@ -1,8 +1,13 @@
 # Ideological Rivals: scripted triggers
 
-# An AI empire that may be made a rival at game start. Scope: country.
-# Gestalts cannot hold a fanatic ethic; Lost Makers have their own ideology; Endbringers are a
-# crisis already; Slavers may take neither crisis (vanilla `potential`); Legendary Leader origins tie the authority the new ethics may forbid.
+# An AI empire that may be made a rival at game start: a regular empire only. Scope: country.
+# - Gestalts cannot hold a fanatic ethic.
+# - Non-playable origins mark scripted empires (vanilla 01_origins_non_playable.txt: fallen
+#   empires, pre-FTL, separatists, Khan successors, NPC hegemons, Slavers, ...).
+# - Origins whose `possible` requires or forbids an ethic (00_origins.txt, 4.6.0): new ethics
+#   would break them. change_government fails then (run B: Forever Cruise, fanatic xenophobe).
+#   Endbringers are also a crisis already.
+# - Lost Makers have their own ideology; Legendary Leader origins tie the authority.
 irv_can_be_rival = {
 	is_country_type = default
 	is_ai = yes
@@ -10,9 +15,42 @@ irv_can_be_rival = {
 	exists = capital_scope
 	NOT = { has_country_flag = irv_rival }
 	NOR = {
-		has_origin = origin_lost_makers
-		has_origin = origin_endbringers
+		# non-playable (scripted) empires
+		has_origin = origin_fallen_empire
+		has_origin = origin_fallen_empire_hive
+		has_origin = origin_enlightened
+		has_origin = origin_default_pre_ftl
+		has_origin = origin_separatists
+		has_origin = origin_liberated
+		has_origin = origin_demonic_incursion
+		has_origin = origin_khan_successor
+		has_origin = origin_life_seeded_ai_only
+		has_origin = origin_common_ground_npc
+		has_origin = origin_hegemon_npc
+		has_origin = origin_imperial_vassal_overlord
 		has_origin = origin_slavers
+		has_origin = origin_nomadic_purger
+		has_origin = origin_nomadic_settled
+		has_origin = origin_nomadic_subject
+		# origins with ethics in `possible`
+		has_origin = origin_sacred_path
+		has_origin = origin_heirs_of_the_khan
+		has_origin = origin_forever_cruise
+		has_origin = origin_mindwardens
+		has_origin = origin_endbringers
+		has_origin = origin_cybernetic_creed
+		has_origin = origin_synthetic_fertility
+		has_origin = origin_broken_shackles
+		has_origin = origin_shroudwalker_apprentice
+		has_origin = origin_necrophage
+		has_origin = origin_scion
+		has_origin = origin_common_ground
+		has_origin = origin_hegemon
+		has_origin = origin_unplugged
+		has_origin = origin_mechanists
+		has_origin = origin_fruitful
+		# own ideology, fixed authority
+		has_origin = origin_lost_makers
 		has_origin = origin_legendary_leader
 		has_origin = origin_legendary_leader_imperial
 		has_origin = origin_legendary_leader_dictatorial
@@ -40,7 +78,7 @@ irv_axis_blocked_fallback = { has_global_flag = irv_axis_$AXIS$ }
 irv_ethic_barred_primary = {
 	OR = {
 		irv_player_holds = { E = $E$ }
-		NOT = { irv_reachable_$E$ = { E = $E$ } }
+		NOT = { has_global_flag = irv_reachable_$E$ }
 	}
 }
 irv_ethic_barred_secondary = { irv_player_holds = { E = $E$ } }
@@ -57,13 +95,7 @@ irv_player_holds = {
 # Does this game offer the ambition a fanatic $E$ rival would pursue? Militarist: Become the
 # Crisis (Nemesis); xenophobe: Galactic Hyperthermia (Infernals); both barred on Civilian (vanilla
 # blocks_disruptive_gameplay). Authoritarian: none (Force of Will bars it). Any other: Force of
-# Will (Willpower, ideologies on). The E parameter only lets CWTools read the call.
+# Will (Willpower, ideologies on). Read once into global flags by irv_init_reachable.
 irv_reachable_militarist = { has_nemesis = yes blocks_disruptive_gameplay = no }
 irv_reachable_xenophobe = { has_infernals = yes blocks_disruptive_gameplay = no }
-irv_reachable_authoritarian = { always = no }
 irv_reachable_fow = { has_force_of_will_dlc = yes ideologies_enabled = yes }
-irv_reachable_egalitarian = { irv_reachable_fow = yes }
-irv_reachable_xenophile = { irv_reachable_fow = yes }
-irv_reachable_pacifist = { irv_reachable_fow = yes }
-irv_reachable_spiritualist = { irv_reachable_fow = yes }
-irv_reachable_materialist = { irv_reachable_fow = yes }

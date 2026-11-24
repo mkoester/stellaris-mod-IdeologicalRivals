@@ -16,6 +16,7 @@ country_event = {
 		set_global_flag = irv_setup_done
 		save_global_event_target_as = irv_player
 		capital_scope = { save_global_event_target_as = irv_cap_0 }
+		irv_init_reachable = yes
 		irv_choose_rival = { N = 1 }
 		if = {
 			limit = { NOR = { galaxy_size = tiny galaxy_size = small } }
@@ -146,50 +147,33 @@ country_event = {
 
 # --- Console test helpers ---------------------------------------------------------------------
 
-# event irv.900: list the rivals and their chosen ethics in game.log.
+# event irv.900: list the rivals, their chosen ethics, aim, ideology and ambition in game.log.
+# Every line names its rival: game.log drops a line identical to an earlier one.
 country_event = {
 	id = irv.900
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
 		log = "IRV player: [This.GetName]"
-		every_country = {
-			limit = { has_country_flag = irv_rival }
-			log = "IRV rival: [This.GetName]"
-			irv_log_flag = { F = primary_egalitarian }
-			irv_log_flag = { F = primary_authoritarian }
-			irv_log_flag = { F = primary_xenophile }
-			irv_log_flag = { F = primary_xenophobe }
-			irv_log_flag = { F = primary_pacifist }
-			irv_log_flag = { F = primary_militarist }
-			irv_log_flag = { F = primary_spiritualist }
-			irv_log_flag = { F = primary_materialist }
-			irv_log_flag = { F = secondary_egalitarian }
-			irv_log_flag = { F = secondary_authoritarian }
-			irv_log_flag = { F = secondary_xenophile }
-			irv_log_flag = { F = secondary_xenophobe }
-			irv_log_flag = { F = secondary_pacifist }
-			irv_log_flag = { F = secondary_militarist }
-			irv_log_flag = { F = secondary_spiritualist }
-			irv_log_flag = { F = secondary_materialist }
-			if = {
-				limit = { exists = ideology }
-				log = "IRV   has an ideology"
+		if = {
+			limit = { exists = event_target:irv_rival_1 }
+			event_target:irv_rival_1 = {
+				log = "IRV rival 1: [This.GetName], capital [This.Capital.GetName]"
+				irv_log_rival = { N = 1 }
 			}
-			irv_log_flag = { F = aim_crisis }
-			irv_log_flag = { F = aim_hyperthermia }
-			irv_log_flag = { F = aim_fow }
-			if = {
-				limit = { has_ascension_perk = ap_force_of_will }
-				log = "IRV   has Force of Will"
+		}
+		if = {
+			limit = { exists = event_target:irv_rival_2 }
+			event_target:irv_rival_2 = {
+				log = "IRV rival 2: [This.GetName], capital [This.Capital.GetName]"
+				irv_log_rival = { N = 2 }
 			}
-			if = {
-				limit = { has_ascension_perk = ap_become_the_crisis }
-				log = "IRV   has Become the Crisis"
-			}
-			if = {
-				limit = { has_ascension_perk = ap_galactic_hyperthermia }
-				log = "IRV   has Galactic Hyperthermia"
+		}
+		if = {
+			limit = { exists = event_target:irv_rival_3 }
+			event_target:irv_rival_3 = {
+				log = "IRV rival 3: [This.GetName], capital [This.Capital.GetName]"
+				irv_log_rival = { N = 3 }
 			}
 		}
 	}
@@ -246,11 +230,11 @@ country_event = {
 			log = "IRV spread [This.Capital.GetName]: spread [This.irv_dbg_spread] euclid [This.irv_dbg_euclid] lanes [This.irv_dbg_lanes]"
 			if = {
 				limit = { irv_can_be_rival = yes }
-				log = "IRV   candidate"
+				log = "IRV   candidate: [This.Capital.GetName]"
 			}
 			if = {
 				limit = { has_country_flag = irv_rival }
-				log = "IRV   rival"
+				log = "IRV   rival: [This.Capital.GetName]"
 			}
 		}
 	}
