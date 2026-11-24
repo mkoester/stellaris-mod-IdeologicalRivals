@@ -103,7 +103,9 @@ Runs A–C done (`docs/test-runs.md`): checklist items 1–9 pass; item 9 shows 
   on its own; see whether its path moves (the design question).
 - item 10 (a DLC disabled in the launcher);
 - run A's spread miss (a farther valid candidate not chosen; unexplained, run B and C were right);
-- cosmetic: `irv.900`'s flag lines print stray `$` (`rival1$:primary_xenophobe$`), and Ba Grax's
+- cosmetic: `irv.900`'s flag lines print stray `$` (`rival1$:primary_xenophobe$`): a `$PARAM$`
+  inside quotes in a scripted effect comes out one character off (modding insights doc 07); log
+  per value from the event instead. And Ba Grax's
   government showed a "?" icon in the diplomacy screen (run C, not understood).
 - Store texts, Discord forum and publishing are not started; the thumbnail is done.
 
