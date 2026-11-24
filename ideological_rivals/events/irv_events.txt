@@ -1,0 +1,183 @@
+namespace = irv
+
+# --- Setup ------------------------------------------------------------------------------------
+
+# Game start, once, for the first human player: choose 1-3 rivals by galaxy size.
+country_event = {
+	id = irv.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		NOT = { has_global_flag = irv_setup_done }
+	}
+	immediate = {
+		set_global_flag = irv_setup_done
+		save_global_event_target_as = irv_player
+		capital_scope = { save_global_event_target_as = irv_cap_0 }
+		irv_choose_rival = { N = 1 }
+		if = {
+			limit = { NOR = { galaxy_size = tiny galaxy_size = small } }
+			irv_choose_rival = { N = 2 }
+		}
+		if = {
+			limit = { NOR = { galaxy_size = tiny galaxy_size = small galaxy_size = medium galaxy_size = large } }
+			irv_choose_rival = { N = 3 }
+		}
+		every_country = {
+			limit = { has_country_flag = irv_rival }
+			add_modifier = { modifier = irv_rival_drive }
+			add_opinion_modifier = { who = event_target:irv_player modifier = irv_opinion_rival }
+		}
+		if = {
+			limit = { any_country = { has_country_flag = irv_rival } }
+			country_event = { id = irv.2 days = 30 }
+		}
+	}
+}
+
+# The player learns that rivals exist (no names: they have not met yet).
+country_event = {
+	id = irv.2
+	title = irv.2.name
+	desc = irv.2.desc
+	picture = GFX_evt_raised_fist
+	is_triggered_only = yes
+	option = { name = irv.2.a }
+}
+
+# --- Monthly, rivals only ---------------------------------------------------------------------
+
+# Found the ideology as soon as the rival knows another empire (vanilla needs a contact), and
+# feed willpower once the player is on Force of Will too.
+country_event = {
+	id = irv.10
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { has_country_flag = irv_rival }
+	immediate = {
+		if = {
+			limit = { irv_rival_needs_ideology = yes }
+			irv_found_ideology = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = irv_player_has_force_of_will
+				has_ascension_perk = ap_force_of_will
+			}
+			add_resource = { willpower = @irv_willpower_monthly }
+		}
+	}
+}
+
+# --- Ascension perks --------------------------------------------------------------------------
+
+# Someone picked a perk. The player on Force of Will: the rivals redouble their efforts.
+# A rival on Force of Will: the player hears of it, if they have met.
+country_event = {
+	id = irv.20
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { has_ascension_perk = ap_force_of_will }
+	immediate = {
+		if = {
+			limit = {
+				is_ai = no
+				NOT = { has_global_flag = irv_player_has_force_of_will }
+			}
+			set_global_flag = irv_player_has_force_of_will
+			every_country = {
+				limit = { has_country_flag = irv_rival }
+				add_modifier = { modifier = irv_rival_redoubled }
+			}
+			if = {
+				limit = { any_country = { has_country_flag = irv_rival } }
+				country_event = { id = irv.21 }
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = irv_rival
+				NOT = { has_country_flag = irv_announced }
+			}
+			set_country_flag = irv_announced
+			every_playable_country = {
+				limit = {
+					is_ai = no
+					has_communications = prev
+				}
+				country_event = { id = irv.22 scopes = { from = prev } }
+			}
+		}
+	}
+}
+
+country_event = {
+	id = irv.21
+	title = irv.21.name
+	desc = irv.21.desc
+	picture = GFX_evt_raised_fist
+	is_triggered_only = yes
+	option = { name = irv.21.a }
+}
+
+# from = the rival
+country_event = {
+	id = irv.22
+	title = irv.22.name
+	desc = irv.22.desc
+	picture = GFX_evt_cultural_envoy
+	is_triggered_only = yes
+	option = { name = irv.22.a }
+}
+
+# --- Console test helpers ---------------------------------------------------------------------
+
+# event irv.900: list the rivals and their chosen ethics in game.log.
+country_event = {
+	id = irv.900
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		log = "IRV player: [This.GetName]"
+		every_country = {
+			limit = { has_country_flag = irv_rival }
+			log = "IRV rival: [This.GetName]"
+			irv_log_flag = { F = primary_egalitarian }
+			irv_log_flag = { F = primary_authoritarian }
+			irv_log_flag = { F = primary_xenophile }
+			irv_log_flag = { F = primary_xenophobe }
+			irv_log_flag = { F = primary_pacifist }
+			irv_log_flag = { F = primary_militarist }
+			irv_log_flag = { F = primary_spiritualist }
+			irv_log_flag = { F = primary_materialist }
+			irv_log_flag = { F = secondary_egalitarian }
+			irv_log_flag = { F = secondary_authoritarian }
+			irv_log_flag = { F = secondary_xenophile }
+			irv_log_flag = { F = secondary_xenophobe }
+			irv_log_flag = { F = secondary_pacifist }
+			irv_log_flag = { F = secondary_militarist }
+			irv_log_flag = { F = secondary_spiritualist }
+			irv_log_flag = { F = secondary_materialist }
+			if = {
+				limit = { exists = ideology }
+				log = "IRV   has an ideology"
+			}
+			if = {
+				limit = { has_ascension_perk = ap_force_of_will }
+				log = "IRV   has Force of Will"
+			}
+		}
+	}
+}
+
+# event irv.901: run the game-start setup again (a test game started without the mod's flag).
+country_event = {
+	id = irv.901
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		remove_global_flag = irv_setup_done
+		country_event = { id = irv.1 }
+	}
+}

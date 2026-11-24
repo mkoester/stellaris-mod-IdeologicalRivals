@@ -1,0 +1,187 @@
+# Ideological Rivals: override of vanilla ap_force_of_will (4.6.0, 00_ascension_perks.txt).
+# Byte-identical to vanilla except the lines marked IRV:. Re-diff after every game update.
+# Why: vanilla bars authoritarian, militarist and xenophobe ideologies; a rival of the player
+# holds exactly those. The ban is lifted only for empires flagged irv_rival.
+
+ap_force_of_will = {
+	potential = {
+		has_force_of_will_dlc = yes
+		NOR = {
+			has_ambition = yes
+			is_player_crisis = yes
+			has_origin = origin_endbringers
+			has_ascension_perk = ap_defender_of_the_galaxy
+			has_ascension_perk = ap_defender_of_the_galaxy_nomads
+		}
+	}
+
+	possible = {
+		custom_tooltip = {
+			fail_text = "requires_ascension_perks_3"
+			num_ascension_perks > 2
+		}
+		custom_tooltip = {
+			fail_text = requires_fanatic
+			is_fanatic = yes
+		}
+		if = {
+			limit = {
+				NOT = { exists = ideology }
+			}
+			custom_tooltip = {
+				fail_text = "must_have_good_ideology"
+				always = no
+			}
+		}
+		else = {
+			custom_tooltip = {
+				fail_text = "must_be_ideological_custodian"
+				ideology = {
+					is_ideology_custodian = root
+				}
+			}
+			if = { # IRV: the three ideology bans do not apply to a rival
+				limit = { NOT = { has_country_flag = irv_rival } } # IRV:
+			custom_tooltip = {
+				fail_text = requires_ideology_not_militarist
+				ideology = {
+					is_militarist = no
+				}
+			}
+			custom_tooltip = {
+				fail_text = requires_ideology_not_xenophobe
+				ideology = {
+					is_xenophobe = no
+				}
+			}
+			custom_tooltip = {
+				fail_text = requires_ideology_not_authoritarian
+				ideology = {
+					is_authoritarian = no
+				}
+			}
+			} # IRV: end of the rival exemption
+		}
+	}
+
+	on_enabled = {
+		activate_crisis_progression = force_of_will_path
+		set_country_flag = cant_abandon_ideology_forceofwill
+		if = {
+			limit = { exists = ideology }
+			custom_tooltip = ap_force_of_will_tooltip
+		}
+		if = {
+			limit = { has_country_flag = abandoning_ideology }
+			custom_tooltip = ap_force_of_will_stop_abandon_tooltip
+		}
+		if = {
+			limit = {
+				any_war = {
+					war_imposes_ideology_on_root = yes
+				}
+			}
+			custom_tooltip = ap_force_of_will_leave_ideological_war_tooltip
+		}
+		hidden_effect = {
+			if = {
+				limit = { has_country_flag = abandoning_ideology }
+				stop_abandon_ideology_process = yes
+			}
+			if = {
+				limit = {
+					any_war = {
+						war_imposes_ideology_on_root = yes
+					}
+				}
+				country_event = {
+					id = forceofwill.6140
+					days = 3
+				}
+			}
+			every_war = {
+				limit = {
+					war_imposes_ideology_on_root = yes
+				}
+				if = {
+					limit = {
+						defender = { is_same_value = root }
+					}
+					attacker = {
+						country_event = {
+							id = forceofwill.6145
+							scopes = { from = root }
+							days = 1
+						}
+					}
+					set_war_goal = {
+						type = wg_humiliation
+						target = attacker
+					}
+				}
+				else = {
+					defender = {
+						country_event = {
+							id = forceofwill.6145
+							scopes = { from = root }
+							days = 1
+						}
+					}
+					set_war_goal = {
+						type = wg_humiliation
+						target = defender
+					}
+				}
+				remove_war_participant = root
+			}
+		}
+	}
+
+	tradition_swap = {
+		name = ap_force_of_will_spiritual
+		inherit_effects = yes
+		inherit_icon = no
+		trigger = {
+			ideology? = {
+				is_spiritualist = yes
+			}
+		}
+	}
+
+	ai_weight = {
+		factor = 7.5
+		modifier = { # IRV: a rival takes it the moment it can
+			factor = 1000
+			has_country_flag = irv_rival
+		}
+		modifier = {
+			factor = 2
+			last_ideology_increase > 1.5
+		}
+		modifier = {
+			factor = 3
+			ideology? = {
+				root = {
+					has_same_fanatic_ethic_as_ideology = prev
+				}
+			}
+		}
+		modifier = {
+			factor = 2
+			ideological_strength > 750
+		}
+		modifier = {
+			factor = 5
+			ideology? = {
+				galactic_strength >= 0.35
+				galactic_strength < 0.5
+			}
+		}
+		modifier = {
+			factor = 10
+			ideology? = {
+				galactic_strength >= 0.5
+			}
+		}
+	}
+}

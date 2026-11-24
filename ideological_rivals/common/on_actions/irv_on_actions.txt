@@ -1,0 +1,5 @@
+# Ideological Rivals: on_actions (merged with vanilla's; nothing is overridden)
+
+on_game_start_country = { events = { irv.1 } }
+on_monthly_pulse_country = { events = { irv.10 } }
+on_ascension_perk_picked = { events = { irv.20 } }

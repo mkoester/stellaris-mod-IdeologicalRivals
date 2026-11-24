@@ -1,0 +1,7 @@
+# Ideological Rivals: tuning values
+
+# Willpower a rival gains each month once the player holds Force of Will too (level 5 needs 10000).
+@irv_willpower_monthly = 25
+
+# Share of each rival pop group moved to its new primary ethic at game start.
+@irv_pop_ethic_share = 0.75

@@ -1,0 +1,222 @@
+# Ideological Rivals: scripted effects
+#
+# Ethic axes, each with a global flag irv_axis_<axis> once a rival has taken it as its primary:
+#   authority  egalitarian / authoritarian
+#   xeno       xenophile / xenophobe
+#   war        pacifist / militarist
+#   spirit     spiritualist / materialist
+# event_target:irv_player is the human player the rivals are chosen against.
+
+# --- Choosing a rival -------------------------------------------------------------------------
+
+# Make the best-spread candidate rival number $N$. Scope: none (global). Needs irv_cap_0..N-1.
+irv_choose_rival = {
+	ordered_country = {
+		limit = { irv_can_be_rival = yes }
+		order_by = value:irv_spread_$N$
+		position = 0
+		set_country_flag = irv_rival
+		save_global_event_target_as = irv_rival_$N$
+		capital_scope = { save_global_event_target_as = irv_cap_$N$ }
+		irv_shape_rival = yes
+	}
+}
+
+# --- Ethics -----------------------------------------------------------------------------------
+
+# Primary: the opposite of one of the player's ethics whose axis no rival has taken yet.
+# Scope: rival. PLAYER = the player's ethic key, AXIS = its axis, OPP = the opposite ethic.
+irv_try_primary = {
+	if = {
+		limit = {
+			NOT = { has_country_flag = irv_primary_done }
+			NOT = { has_global_flag = irv_axis_$AXIS$ }
+			event_target:irv_player = { has_ethic = $PLAYER$ }
+		}
+		set_country_flag = irv_primary_done
+		set_country_flag = irv_axis_$AXIS$
+		set_country_flag = irv_primary_$OPP$
+		set_global_flag = irv_axis_$AXIS$
+	}
+}
+
+# Secondary: the opposite of another of the player's ethics, on an axis other than the primary.
+# Scope: rival. ETHIC = the player's ethic (without ethic_ and fanatic_), OPP = its opposite.
+irv_try_secondary = {
+	if = {
+		limit = {
+			NOT = { has_country_flag = irv_secondary_done }
+			NOT = { has_country_flag = irv_axis_$AXIS$ }
+			event_target:irv_player = {
+				OR = {
+					has_ethic = ethic_$ETHIC$
+					has_ethic = ethic_fanatic_$ETHIC$
+				}
+			}
+		}
+		set_country_flag = irv_secondary_done
+		set_country_flag = irv_secondary_$OPP$
+	}
+}
+
+# Fallback when the player offers no axis left (gestalt player, or more rivals than player axes).
+# Scope: rival. KIND = primary or secondary; a primary also claims the axis globally.
+irv_random_ethic = {
+	random_list = {
+		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = authority } } irv_set_random_$KIND$ = { AXIS = authority E = egalitarian } }
+		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = authority } } irv_set_random_$KIND$ = { AXIS = authority E = authoritarian } }
+		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = xeno } } irv_set_random_$KIND$ = { AXIS = xeno E = xenophile } }
+		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = xeno } } irv_set_random_$KIND$ = { AXIS = xeno E = xenophobe } }
+		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = war } } irv_set_random_$KIND$ = { AXIS = war E = pacifist } }
+		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = war } } irv_set_random_$KIND$ = { AXIS = war E = militarist } }
+		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = spirit } } irv_set_random_$KIND$ = { AXIS = spirit E = spiritualist } }
+		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = spirit } } irv_set_random_$KIND$ = { AXIS = spirit E = materialist } }
+	}
+}
+
+irv_set_random_primary = {
+	set_country_flag = irv_primary_done
+	set_country_flag = irv_primary_$E$
+	set_country_flag = irv_axis_$AXIS$
+	set_global_flag = irv_axis_$AXIS$
+}
+
+irv_set_random_secondary = {
+	set_country_flag = irv_secondary_done
+	set_country_flag = irv_secondary_$E$
+	set_country_flag = irv_secondary_axis_$AXIS$
+}
+
+# Replace the ethos by the chosen ethics and repair the government. Scope: rival.
+irv_apply_ethics = {
+	clear_ethos = yes
+	irv_add_ethic = { E = egalitarian }
+	irv_add_ethic = { E = authoritarian }
+	irv_add_ethic = { E = xenophile }
+	irv_add_ethic = { E = xenophobe }
+	irv_add_ethic = { E = pacifist }
+	irv_add_ethic = { E = militarist }
+	irv_add_ethic = { E = spiritualist }
+	irv_add_ethic = { E = materialist }
+	irv_fix_authority = yes
+}
+
+irv_add_ethic = {
+	if = {
+		limit = { has_country_flag = irv_primary_$E$ }
+		country_add_ethic = ethic_fanatic_$E$
+		every_owned_pop_group = {
+			pop_change_ethic = { ethic = ethic_$E$ percentage = @irv_pop_ethic_share }
+		}
+	}
+	if = {
+		limit = { has_country_flag = irv_secondary_$E$ }
+		country_add_ethic = ethic_$E$
+	}
+}
+
+# Authorities that the new ethics forbid (common/governments/authorities/00_authorities.txt):
+# democratic: no authoritarian; oligarchic: no fanatic egalitarian/authoritarian;
+# dictatorial and imperial: no egalitarian.
+irv_fix_authority = {
+	if = {
+		limit = {
+			has_ethic = ethic_fanatic_authoritarian
+			OR = { has_authority = auth_democratic has_authority = auth_oligarchic }
+		}
+		change_government = { authority = auth_dictatorial remove_invalid_civics = yes cooldown = no }
+	}
+	else_if = {
+		limit = {
+			has_ethic = ethic_fanatic_egalitarian
+			OR = { has_authority = auth_dictatorial has_authority = auth_imperial has_authority = auth_oligarchic }
+		}
+		change_government = { authority = auth_democratic remove_invalid_civics = yes cooldown = no }
+	}
+	else_if = {
+		limit = { has_ethic = ethic_authoritarian has_authority = auth_democratic }
+		change_government = { authority = auth_oligarchic remove_invalid_civics = yes cooldown = no }
+	}
+	else_if = {
+		limit = {
+			has_ethic = ethic_egalitarian
+			OR = { has_authority = auth_dictatorial has_authority = auth_imperial }
+		}
+		change_government = { authority = auth_oligarchic remove_invalid_civics = yes cooldown = no }
+	}
+	else = {
+		change_government = { remove_invalid_civics = yes cooldown = no }
+	}
+}
+
+# Pick and apply a rival's ethics. Scope: rival. The player's fanatic ethic is used first.
+irv_shape_rival = {
+	irv_try_primary = { PLAYER = ethic_fanatic_egalitarian AXIS = authority OPP = authoritarian }
+	irv_try_primary = { PLAYER = ethic_fanatic_authoritarian AXIS = authority OPP = egalitarian }
+	irv_try_primary = { PLAYER = ethic_fanatic_xenophile AXIS = xeno OPP = xenophobe }
+	irv_try_primary = { PLAYER = ethic_fanatic_xenophobe AXIS = xeno OPP = xenophile }
+	irv_try_primary = { PLAYER = ethic_fanatic_pacifist AXIS = war OPP = militarist }
+	irv_try_primary = { PLAYER = ethic_fanatic_militarist AXIS = war OPP = pacifist }
+	irv_try_primary = { PLAYER = ethic_fanatic_spiritualist AXIS = spirit OPP = materialist }
+	irv_try_primary = { PLAYER = ethic_fanatic_materialist AXIS = spirit OPP = spiritualist }
+	irv_try_primary = { PLAYER = ethic_egalitarian AXIS = authority OPP = authoritarian }
+	irv_try_primary = { PLAYER = ethic_authoritarian AXIS = authority OPP = egalitarian }
+	irv_try_primary = { PLAYER = ethic_xenophile AXIS = xeno OPP = xenophobe }
+	irv_try_primary = { PLAYER = ethic_xenophobe AXIS = xeno OPP = xenophile }
+	irv_try_primary = { PLAYER = ethic_pacifist AXIS = war OPP = militarist }
+	irv_try_primary = { PLAYER = ethic_militarist AXIS = war OPP = pacifist }
+	irv_try_primary = { PLAYER = ethic_spiritualist AXIS = spirit OPP = materialist }
+	irv_try_primary = { PLAYER = ethic_materialist AXIS = spirit OPP = spiritualist }
+	if = {
+		limit = { NOT = { has_country_flag = irv_primary_done } }
+		irv_random_ethic = { KIND = primary }
+	}
+	irv_try_secondary = { ETHIC = egalitarian AXIS = authority OPP = authoritarian }
+	irv_try_secondary = { ETHIC = authoritarian AXIS = authority OPP = egalitarian }
+	irv_try_secondary = { ETHIC = xenophile AXIS = xeno OPP = xenophobe }
+	irv_try_secondary = { ETHIC = xenophobe AXIS = xeno OPP = xenophile }
+	irv_try_secondary = { ETHIC = pacifist AXIS = war OPP = militarist }
+	irv_try_secondary = { ETHIC = militarist AXIS = war OPP = pacifist }
+	irv_try_secondary = { ETHIC = spiritualist AXIS = spirit OPP = materialist }
+	irv_try_secondary = { ETHIC = materialist AXIS = spirit OPP = spiritualist }
+	if = {
+		limit = { NOT = { has_country_flag = irv_secondary_done } }
+		irv_random_ethic = { KIND = secondary }
+	}
+	irv_apply_ethics = yes
+}
+
+# --- Ideology ---------------------------------------------------------------------------------
+
+# Found the rival's ideology from its primary ethic (vanilla generate_ideology_from_faction_or_ethic,
+# common/scripted_effects/forceofwill_scripted_effects.txt). Scope: rival.
+irv_found_ideology = {
+	irv_found_ideology_for = { E = egalitarian }
+	irv_found_ideology_for = { E = authoritarian }
+	irv_found_ideology_for = { E = xenophile }
+	irv_found_ideology_for = { E = xenophobe }
+	irv_found_ideology_for = { E = pacifist }
+	irv_found_ideology_for = { E = militarist }
+	irv_found_ideology_for = { E = spiritualist }
+	irv_found_ideology_for = { E = materialist }
+}
+
+irv_found_ideology_for = {
+	if = {
+		limit = {
+			has_country_flag = irv_primary_$E$
+			NOT = { exists = ideology }
+		}
+		generate_ideology_from_faction_or_ethic = { ETHIC = $E$ }
+	}
+}
+
+# --- Test helpers -----------------------------------------------------------------------------
+
+# Log one of the rival's choice flags (irv.900). Scope: rival.
+irv_log_flag = {
+	if = {
+		limit = { has_country_flag = irv_$F$ }
+		log = "IRV   $F$"
+	}
+}

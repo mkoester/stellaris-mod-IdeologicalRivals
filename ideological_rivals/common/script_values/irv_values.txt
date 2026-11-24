@@ -1,0 +1,35 @@
+# Ideological Rivals: script values. Scope: a candidate country.
+
+# Galaxy-map distance from the candidate's capital to a saved capital planet.
+irv_distance_to = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = distance
+		trigger_scope = capital_scope
+		mode = add
+		parameters = {
+			source = $CAP$
+		}
+	}
+}
+
+# How well a candidate spreads the rivals out: the sum of its distances to the player's capital
+# and to the capitals of the rivals already chosen. Highest wins. A sum, not the minimum, so a
+# candidate far from the player but next to rival 1 can still score; check the map in test runs.
+irv_spread_1 = {
+	base = 0
+	add = value:irv_distance_to|CAP|event_target:irv_cap_0|
+}
+
+irv_spread_2 = {
+	base = 0
+	add = value:irv_distance_to|CAP|event_target:irv_cap_0|
+	add = value:irv_distance_to|CAP|event_target:irv_cap_1|
+}
+
+irv_spread_3 = {
+	base = 0
+	add = value:irv_distance_to|CAP|event_target:irv_cap_0|
+	add = value:irv_distance_to|CAP|event_target:irv_cap_1|
+	add = value:irv_distance_to|CAP|event_target:irv_cap_2|
+}

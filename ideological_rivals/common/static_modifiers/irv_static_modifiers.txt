@@ -1,0 +1,16 @@
+# Ideological Rivals: static modifiers
+
+# Every rival, from game start: a little more unity, to reach the three perks Force of Will needs.
+irv_rival_drive = {
+	icon = "gfx/interface/icons/modifiers/mod_country_max_ideological_rivalries.dds"
+	icon_frame = 1
+	country_unity_produces_mult = 0.10
+}
+
+# Every rival, once the player takes Force of Will. Marker for the tooltip; the extra willpower
+# itself comes from irv.10 (crisis currency has no production modifier).
+irv_rival_redoubled = {
+	icon = "gfx/interface/icons/modifiers/mod_country_max_ideological_rivalries.dds"
+	icon_frame = 1
+	country_unity_produces_mult = 0.10
+}

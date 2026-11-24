@@ -1,0 +1,6 @@
+# Ideological Rivals: a rival's view of the player
+irv_opinion_rival = {
+	opinion = {
+		base = -50
+	}
+}
