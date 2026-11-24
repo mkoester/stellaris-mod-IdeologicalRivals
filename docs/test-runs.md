@@ -21,8 +21,10 @@ each run, check `error.log` for `irv_` lines and for errors about `zz_irv_ascens
    override lost the load order (`zz_` → try `!!_`).
 7. **Speed-up**: give the player Force of Will. `irv.21` appears, rivals carry
    `irv_rival_redoubled`, and a rival's willpower rises by 25 a month on top of its objectives (top
-   bar via `play <id>`). If it does not move, `add_resource` does not reach crisis currency: find
-   another lever.
+   bar via `play <id>`). If it does not move, `add_resource` does not reach crisis currency. The
+   documented lever is then `complete_crisis_objective = <a Force of Will objective>` (vanilla
+   uses it for other paths, e.g. `crisobj_purge_pops`). The recurring
+   `crisobj_have_vassals_forceofwill` pays 10–50 depending on the number of empires.
 8. **Announcement**: a rival in contact takes Force of Will, and the player gets `irv.22`.
 
 ## Results

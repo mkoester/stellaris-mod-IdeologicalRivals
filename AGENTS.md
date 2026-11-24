@@ -63,10 +63,21 @@ the `zz_` prefix. That ascension perks follow this rule is **untested**.
 ## Known gaps (by design, until test runs say otherwise)
 
 - A rival can take another ambition first (Become the Crisis and others), and `has_ambition` then
-  blocks Force of Will. Preventing that would mean overriding the other ambition perks.
+  blocks Force of Will. Preventing that would mean overriding the other ambition perks. The risk
+  is small: once Force of Will is possible, its ×1000 weight wins. The window is the time
+  before the rival is custodian. If test runs show it happens: `on_ascension_perk_picked` →
+  `remove_ascension_perk` + `cancel_crisis` (both in `effects.log`) undo it, but the other
+  ambition's `on_enabled` has already run.
 - If another empire is custodian of the same ideology and the rival adopts it, the rival
   is not custodian, and the perk stays closed.
 - Multiplayer: the rivals oppose the first human player only.
+
+## Static check
+
+From the workspace root:
+`scripts/cwtools_check.py stellaris-mod-IdeologicalRivals/ideological_rivals --game-dir <game> --rules ~/src/cwtools-stellaris-config/config`.
+0 findings on 2026-11-24, with a broken control file reported. The ignored rule gaps are the
+4.6 ideology code and the `irv_primary_$OPP$` flags, which CWTools cannot expand.
 
 ## Test runs
 
