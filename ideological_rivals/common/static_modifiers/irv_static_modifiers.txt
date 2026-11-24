@@ -14,3 +14,4 @@ irv_rival_redoubled = {
 	icon_frame = 1
 	country_unity_produces_mult = 0.10
 }
+

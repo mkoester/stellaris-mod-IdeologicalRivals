@@ -2,7 +2,7 @@
 
 # An AI empire that may be made a rival at game start. Scope: country.
 # Gestalts cannot hold a fanatic ethic; Lost Makers have their own ideology; Endbringers are a
-# crisis already; Legendary Leader origins tie the authority the new ethics may forbid.
+# crisis already; Slavers may take neither crisis (vanilla `potential`); Legendary Leader origins tie the authority the new ethics may forbid.
 irv_can_be_rival = {
 	is_country_type = default
 	is_ai = yes
@@ -12,16 +12,18 @@ irv_can_be_rival = {
 	NOR = {
 		has_origin = origin_lost_makers
 		has_origin = origin_endbringers
+		has_origin = origin_slavers
 		has_origin = origin_legendary_leader
 		has_origin = origin_legendary_leader_imperial
 		has_origin = origin_legendary_leader_dictatorial
 	}
 }
 
-# A rival that should found its ideology now. Scope: country.
+# A Force of Will rival that should found its ideology now. Scope: country. Crisis rivals never
+# found one: Become the Crisis and Hyperthermia require not being a custodian.
 # Mirrors vanilla can_generate_ideology's contact clause: an ideology needs a known empire.
 irv_rival_needs_ideology = {
-	has_country_flag = irv_rival
+	has_country_flag = irv_aim_fow
 	ideologies_enabled = yes
 	NOT = { exists = ideology }
 	any_playable_country = { has_communications = root }
@@ -31,3 +33,18 @@ irv_rival_needs_ideology = {
 # A primary may not reuse an axis another rival holds; a secondary may not reuse its own primary's.
 irv_axis_blocked_primary = { has_global_flag = irv_axis_$AXIS$ }
 irv_axis_blocked_secondary = { has_country_flag = irv_axis_$AXIS$ }
+
+# For irv_random_ethic: an ethic the player holds is no opposition, and an authoritarian primary
+# is never chosen (see irv_shape_rival). Scope: rival.
+irv_ethic_barred_primary = { irv_player_holds = { E = $E$ } }
+irv_ethic_barred_secondary = { irv_player_holds = { E = $E$ } }
+irv_authoritarian_barred_primary = { always = yes }
+irv_authoritarian_barred_secondary = { always = no }
+irv_player_holds = {
+	event_target:irv_player = {
+		OR = {
+			has_ethic = ethic_$E$
+			has_ethic = ethic_fanatic_$E$
+		}
+	}
+}

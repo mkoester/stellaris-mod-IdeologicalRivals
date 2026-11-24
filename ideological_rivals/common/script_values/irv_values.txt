@@ -33,3 +33,17 @@ irv_spread_3 = {
 	add = value:irv_distance_to|CAP|event_target:irv_cap_1|
 	add = value:irv_distance_to|CAP|event_target:irv_cap_2|
 }
+
+# Test only (irv.903): the distance to the player's capital by an explicit measure.
+irv_dbg_distance = {
+	base = 0
+	complex_trigger_modifier = {
+		trigger = distance
+		trigger_scope = capital_scope
+		mode = add
+		parameters = {
+			source = event_target:irv_cap_0
+			type = $TYPE$
+		}
+	}
+}

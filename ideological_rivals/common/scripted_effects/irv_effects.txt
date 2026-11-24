@@ -60,17 +60,51 @@ irv_try_secondary = {
 }
 
 # Fallback when the player offers no axis left (gestalt player, or more rivals than player axes).
-# Scope: rival. KIND = primary or secondary; a primary also claims the axis globally.
+# Scope: rival. KIND = primary or secondary; a primary also claims the axis globally. Never an
+# ethic the player holds, never an authoritarian primary (irv_ethic_barred_*).
 irv_random_ethic = {
 	random_list = {
-		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = authority } } irv_set_random_$KIND$ = { AXIS = authority E = egalitarian } }
-		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = authority } } irv_set_random_$KIND$ = { AXIS = authority E = authoritarian } }
-		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = xeno } } irv_set_random_$KIND$ = { AXIS = xeno E = xenophile } }
-		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = xeno } } irv_set_random_$KIND$ = { AXIS = xeno E = xenophobe } }
-		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = war } } irv_set_random_$KIND$ = { AXIS = war E = pacifist } }
-		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = war } } irv_set_random_$KIND$ = { AXIS = war E = militarist } }
-		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = spirit } } irv_set_random_$KIND$ = { AXIS = spirit E = spiritualist } }
-		1 = { modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = spirit } } irv_set_random_$KIND$ = { AXIS = spirit E = materialist } }
+		1 = {
+			modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = authority } }
+			modifier = { factor = 0 irv_ethic_barred_$KIND$ = { E = egalitarian } }
+			irv_set_random_$KIND$ = { AXIS = authority E = egalitarian }
+		}
+		1 = {
+			modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = authority } }
+			modifier = { factor = 0 irv_ethic_barred_$KIND$ = { E = authoritarian } }
+			modifier = { factor = 0 irv_authoritarian_barred_$KIND$ = { E = authoritarian } }
+			irv_set_random_$KIND$ = { AXIS = authority E = authoritarian }
+		}
+		1 = {
+			modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = xeno } }
+			modifier = { factor = 0 irv_ethic_barred_$KIND$ = { E = xenophile } }
+			irv_set_random_$KIND$ = { AXIS = xeno E = xenophile }
+		}
+		1 = {
+			modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = xeno } }
+			modifier = { factor = 0 irv_ethic_barred_$KIND$ = { E = xenophobe } }
+			irv_set_random_$KIND$ = { AXIS = xeno E = xenophobe }
+		}
+		1 = {
+			modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = war } }
+			modifier = { factor = 0 irv_ethic_barred_$KIND$ = { E = pacifist } }
+			irv_set_random_$KIND$ = { AXIS = war E = pacifist }
+		}
+		1 = {
+			modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = war } }
+			modifier = { factor = 0 irv_ethic_barred_$KIND$ = { E = militarist } }
+			irv_set_random_$KIND$ = { AXIS = war E = militarist }
+		}
+		1 = {
+			modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = spirit } }
+			modifier = { factor = 0 irv_ethic_barred_$KIND$ = { E = spiritualist } }
+			irv_set_random_$KIND$ = { AXIS = spirit E = spiritualist }
+		}
+		1 = {
+			modifier = { factor = 0 irv_axis_blocked_$KIND$ = { AXIS = spirit } }
+			modifier = { factor = 0 irv_ethic_barred_$KIND$ = { E = materialist } }
+			irv_set_random_$KIND$ = { AXIS = spirit E = materialist }
+		}
 	}
 }
 
@@ -149,9 +183,10 @@ irv_fix_authority = {
 	}
 }
 
-# Pick and apply a rival's ethics. Scope: rival. The player's fanatic ethic is used first.
+# Pick and apply a rival's ethics, then its ambition. Scope: rival. The player's fanatic ethic is
+# used first. Authoritarian is never a primary: vanilla Force of Will bars an authoritarian
+# ideology, and no other ambition suits it, so an egalitarian player is opposed by secondaries.
 irv_shape_rival = {
-	irv_try_primary = { PLAYER = ethic_fanatic_egalitarian AXIS = authority OPP = authoritarian }
 	irv_try_primary = { PLAYER = ethic_fanatic_authoritarian AXIS = authority OPP = egalitarian }
 	irv_try_primary = { PLAYER = ethic_fanatic_xenophile AXIS = xeno OPP = xenophobe }
 	irv_try_primary = { PLAYER = ethic_fanatic_xenophobe AXIS = xeno OPP = xenophile }
@@ -159,7 +194,6 @@ irv_shape_rival = {
 	irv_try_primary = { PLAYER = ethic_fanatic_militarist AXIS = war OPP = pacifist }
 	irv_try_primary = { PLAYER = ethic_fanatic_spiritualist AXIS = spirit OPP = materialist }
 	irv_try_primary = { PLAYER = ethic_fanatic_materialist AXIS = spirit OPP = spiritualist }
-	irv_try_primary = { PLAYER = ethic_egalitarian AXIS = authority OPP = authoritarian }
 	irv_try_primary = { PLAYER = ethic_authoritarian AXIS = authority OPP = egalitarian }
 	irv_try_primary = { PLAYER = ethic_xenophile AXIS = xeno OPP = xenophobe }
 	irv_try_primary = { PLAYER = ethic_xenophobe AXIS = xeno OPP = xenophile }
@@ -184,6 +218,85 @@ irv_shape_rival = {
 		irv_random_ethic = { KIND = secondary }
 	}
 	irv_apply_ethics = yes
+	irv_choose_aim = yes
+}
+
+# --- Ambition ---------------------------------------------------------------------------------
+
+# Which ambition the rival will pursue. Scope: rival, after its ethics are set.
+# Militarist: Become the Crisis; xenophobe: Galactic Hyperthermia (vanilla bars both from
+# xenophiles and pacifists, and its AI takes them only as militarist or xenophobe); any other
+# primary: Force of Will. Without the crisis's DLC, or on Civilian difficulty (vanilla
+# blocks_disruptive_gameplay), a crisis rival pursues none and stays a rival only.
+irv_choose_aim = {
+	if = {
+		limit = { has_country_flag = irv_primary_militarist }
+		if = {
+			limit = { has_nemesis = yes blocks_disruptive_gameplay = no }
+			set_country_flag = irv_aim_crisis
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = irv_primary_xenophobe }
+		if = {
+			limit = { has_infernals = yes blocks_disruptive_gameplay = no }
+			set_country_flag = irv_aim_hyperthermia
+		}
+	}
+	else = {
+		set_country_flag = irv_aim_fow
+	}
+}
+
+# Grant the rival its ambition once it holds 3 perks (every ambition's own threshold). Scope: rival.
+# The AI would rarely take a crisis by itself (vanilla ai_weight: 0 below 10 % of the galaxy, 0
+# for a non-infernal Hyperthermia), so the mod adds the perk. add_ascension_perk skips `possible`,
+# so a Force of Will rival is checked against vanilla's own conditions here.
+irv_grant_ambition = {
+	if = {
+		limit = {
+			has_ambition = no
+			num_ascension_perks > 2
+			is_subject = no
+		}
+		if = {
+			limit = { has_country_flag = irv_aim_crisis }
+			add_ascension_perk = ap_become_the_crisis
+		}
+		else_if = {
+			limit = { has_country_flag = irv_aim_hyperthermia }
+			add_ascension_perk = ap_galactic_hyperthermia
+		}
+		else_if = {
+			limit = {
+				has_country_flag = irv_aim_fow
+				is_fanatic = yes
+				exists = ideology
+				ideology = { is_ideology_custodian = root }
+			}
+			add_ascension_perk = ap_force_of_will
+		}
+		if = {
+			limit = { has_ambition = yes }
+			log = "IRV ambition granted: [This.GetName]"
+			irv_announce = yes
+		}
+	}
+}
+
+# Tell the human players who know the rival that it has taken its ambition, once. Scope: rival.
+irv_announce = {
+	if = {
+		limit = { NOT = { has_country_flag = irv_announced } }
+		set_country_flag = irv_announced
+		every_playable_country = {
+			limit = {
+				is_ai = no
+				has_communications = prev
+			}
+			country_event = { id = irv.22 scopes = { from = prev } }
+		}
+	}
 }
 
 # --- Ideology ---------------------------------------------------------------------------------

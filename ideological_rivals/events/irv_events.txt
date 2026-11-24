@@ -2,7 +2,8 @@ namespace = irv
 
 # --- Setup ------------------------------------------------------------------------------------
 
-# Game start, once, for the first human player: choose 1-3 rivals by galaxy size.
+# Game start, once, for the first human player: choose 1-3 rivals by galaxy size
+# (tiny, small: 1; medium, large: 2; huge and larger: 3).
 country_event = {
 	id = irv.1
 	hide_window = yes
@@ -60,6 +61,7 @@ country_event = {
 			limit = { irv_rival_needs_ideology = yes }
 			irv_found_ideology = yes
 		}
+		irv_grant_ambition = yes
 		if = {
 			limit = {
 				has_global_flag = irv_player_has_force_of_will
@@ -73,18 +75,32 @@ country_event = {
 # --- Ascension perks --------------------------------------------------------------------------
 
 # Someone picked a perk. The player on Force of Will: the rivals redouble their efforts.
-# A rival on Force of Will: the player hears of it, if they have met.
+# A rival: its ambition may be due now (3 perks), before its next pick could be another ambition.
+# If its AI took its ambition itself, it is announced here.
 country_event = {
 	id = irv.20
 	hide_window = yes
 	is_triggered_only = yes
-	trigger = { has_ascension_perk = ap_force_of_will }
-	immediate = {
-		if = {
-			limit = {
+	trigger = {
+		OR = {
+			has_country_flag = irv_rival
+			AND = {
 				is_ai = no
+				has_ascension_perk = ap_force_of_will
 				NOT = { has_global_flag = irv_player_has_force_of_will }
 			}
+		}
+	}
+	immediate = {
+		if = {
+			limit = { has_country_flag = irv_rival }
+			irv_grant_ambition = yes
+			if = {
+				limit = { has_ambition = yes }
+				irv_announce = yes
+			}
+		}
+		else = {
 			set_global_flag = irv_player_has_force_of_will
 			every_country = {
 				limit = { has_country_flag = irv_rival }
@@ -93,20 +109,6 @@ country_event = {
 			if = {
 				limit = { any_country = { has_country_flag = irv_rival } }
 				country_event = { id = irv.21 }
-			}
-		}
-		if = {
-			limit = {
-				has_country_flag = irv_rival
-				NOT = { has_country_flag = irv_announced }
-			}
-			set_country_flag = irv_announced
-			every_playable_country = {
-				limit = {
-					is_ai = no
-					has_communications = prev
-				}
-				country_event = { id = irv.22 scopes = { from = prev } }
 			}
 		}
 	}
@@ -125,7 +127,18 @@ country_event = {
 country_event = {
 	id = irv.22
 	title = irv.22.name
-	desc = irv.22.desc
+	desc = {
+		trigger = { from = { has_ascension_perk = ap_become_the_crisis } }
+		text = irv.22.desc.crisis
+	}
+	desc = {
+		trigger = { from = { has_ascension_perk = ap_galactic_hyperthermia } }
+		text = irv.22.desc.hyperthermia
+	}
+	desc = {
+		trigger = { from = { has_ascension_perk = ap_force_of_will } }
+		text = irv.22.desc
+	}
 	picture = GFX_evt_cultural_envoy
 	is_triggered_only = yes
 	option = { name = irv.22.a }
@@ -163,9 +176,20 @@ country_event = {
 				limit = { exists = ideology }
 				log = "IRV   has an ideology"
 			}
+			irv_log_flag = { F = aim_crisis }
+			irv_log_flag = { F = aim_hyperthermia }
+			irv_log_flag = { F = aim_fow }
 			if = {
 				limit = { has_ascension_perk = ap_force_of_will }
 				log = "IRV   has Force of Will"
+			}
+			if = {
+				limit = { has_ascension_perk = ap_become_the_crisis }
+				log = "IRV   has Become the Crisis"
+			}
+			if = {
+				limit = { has_ascension_perk = ap_galactic_hyperthermia }
+				log = "IRV   has Galactic Hyperthermia"
 			}
 		}
 	}
@@ -179,5 +203,55 @@ country_event = {
 	immediate = {
 		remove_global_flag = irv_setup_done
 		country_event = { id = irv.1 }
+	}
+}
+
+# event irv.902 (test): every rival gets 3 ascension perks; irv.10 grants its ambition next month.
+country_event = {
+	id = irv.902
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		every_country = {
+			limit = { has_country_flag = irv_rival }
+			log = "IRV test: 3 perks for [This.GetName]"
+			if = {
+				limit = { NOT = { has_ascension_perk = ap_technological_ascendancy } }
+				add_ascension_perk = ap_technological_ascendancy
+			}
+			if = {
+				limit = { NOT = { has_ascension_perk = ap_one_vision } }
+				add_ascension_perk = ap_one_vision
+			}
+			if = {
+				limit = { NOT = { has_ascension_perk = ap_interstellar_dominion } }
+				add_ascension_perk = ap_interstellar_dominion
+			}
+		}
+	}
+}
+
+# event irv.903 (test): every empire's spread score and its distances to the player's capital,
+# to check which measure `distance` uses by default and that the farthest candidate was chosen.
+country_event = {
+	id = irv.903
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		every_country = {
+			limit = { is_country_type = default exists = capital_scope }
+			set_variable = { which = irv_dbg_spread value = value:irv_spread_1 }
+			set_variable = { which = irv_dbg_euclid value = value:irv_dbg_distance|TYPE|euclidean| }
+			set_variable = { which = irv_dbg_lanes value = value:irv_dbg_distance|TYPE|hyperlane| }
+			log = "IRV spread [This.Capital.GetName]: spread [This.irv_dbg_spread] euclid [This.irv_dbg_euclid] lanes [This.irv_dbg_lanes]"
+			if = {
+				limit = { irv_can_be_rival = yes }
+				log = "IRV   candidate"
+			}
+			if = {
+				limit = { has_country_flag = irv_rival }
+				log = "IRV   rival"
+			}
+		}
 	}
 }

@@ -6,7 +6,7 @@
  irv_opinion_rival:0 "Ideological Rival"
 
  irv.2.name:0 "Voices Against Us"
- irv.2.desc:0 "Our listening posts pick up faint signals from far across the galaxy: the transmissions of civilisations whose every value seems the inverse of ours. We do not know them yet, but we already know this: wherever our ideals spread, theirs will push back.\n\n§HIdeological Rivals:§! a number of distant empires hold ethics opposed to ours, and they will seek to impose their will on the galaxy (the §YForce of Will§! ambition)."
+ irv.2.desc:0 "Our listening posts pick up faint signals from far across the galaxy: the transmissions of civilisations whose every value seems the inverse of ours. We do not know them yet, but we already know this: wherever our ideals spread, theirs will push back.\n\n§HIdeological Rivals:§! a number of distant empires hold ethics opposed to ours, and each will pursue an ambition against us: to impose its ideology on the galaxy (§YForce of Will§!), or, for the most warlike and the most hateful, to become its crisis (§YBecome the Crisis§!, §YGalactic Hyperthermia§!)."
  irv.2.a:0 "Let them come."
 
  irv.21.name:0 "The Rivals Stir"
@@ -15,4 +15,6 @@
 
  irv.22.name:0 "A Rival Will Awakens"
  irv.22.desc:0 "[From.GetName] has declared its intention to impose its ideology on the galaxy. Its beliefs are the opposite of ours, and it will not rest until they are everyone's."
+ irv.22.desc.crisis:0 "[From.GetName] has turned its fleets and its industry to a single purpose: the end of every civilisation that will not kneel. Its beliefs are the opposite of ours, and it has chosen to become the galaxy's crisis."
+ irv.22.desc.hyperthermia:0 "[From.GetName] has begun to set the galaxy alight, remaking it for its own kind and no other. Its beliefs are the opposite of ours, and its fire will not stop at our borders."
  irv.22.a:0 "We will stand against them."
