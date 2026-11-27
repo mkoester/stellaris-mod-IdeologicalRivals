@@ -88,6 +88,19 @@ get `irv.22`, worded per ambition.
 - `irv_rival_drive` (+10 % unity) on every rival helps it reach the 3 perks. It also carries an
   opinion of −50 toward the player.
 
+## Game updates
+
+- **4.6.1 (open beta of 2026-11-27, checked in its files):** `ap_force_of_will` is unchanged
+  (identical to the 4.6.0 copy in `git show 894f7d0^`), and it still bans the three ethics. The
+  changes that touch the paths are on the test checklist, item 11. 0 CWTools findings.
+- **4.6.2 (announced for about 2026-12-11):** Force of Will opens to authoritarian ideologies.
+  The user decided on 2026-11-27: once the 4.6.2 beta files are installed, authoritarian becomes
+  a primary that goes the Force of Will path (`irv_reachable_authoritarian`, `irv_choose_aim`,
+  the Force of Will branch of `irv_grant_ambition`, which checks vanilla's bans itself), then a
+  test run. Check the new perk file first: the notes name only authoritarian, not militarist or
+  xenophobe. 4.6.2 also removes the civics that a new Absolute Ethic no longer permits. Check
+  whether `irv_fix_authority`'s civic refill still has anything to do.
+
 ## Design questions (from run C)
 
 - The crisis rivals stall where vanilla's AI would not have chosen the path: Become the Crisis
@@ -107,7 +120,10 @@ Runs A–C done (`docs/test-runs.md`): checklist items 1–9 pass; item 9 shows 
   inside quotes in a scripted effect comes out one character off (modding insights doc 07); log
   per value from the event instead. And Ba Grax's
   government showed a "?" icon in the diplomacy screen (run C, not understood).
-- Store texts, Discord forum and publishing are not started; the thumbnail is done.
+- Store texts and publishing are not started; the thumbnail is done. The Discord forum
+  `ideological-rivals` exists, with its About post pinned (2026-11-27), but its store links still
+  read `WORKSHOP` and `PDX`: after the first upload, fill them in `docs/discord-posts.md` (workspace)
+  and edit the post on Discord. Its invite code is not in `docs/discord.md`'s table yet.
 
 ## Script pitfalls (seen in run B)
 

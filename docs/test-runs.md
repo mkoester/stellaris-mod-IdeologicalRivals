@@ -34,6 +34,15 @@ each run, check `error.log` for `irv` lines.
    heat (their level in the Situation Log), and nothing in `error.log` names the paths.
 10. **Missing DLC** (a game with Nemesis or Infernals disabled in the launcher's DLC list): no
     rival gets that crisis's ethic as its primary; it appears as a secondary at most.
+11. **4.6.1 changes** (watch these in the natural-pace run, which runs on 4.6.1). Nothing in the
+    mod depends on them, but they change how the rival's path plays out:
+    - The Force of Will rival's Ideological Reach: modifiers now apply before the Reach
+      calculation, so inflated Reach drops. Check that its ideology still spreads, and record
+      its strength over the decades.
+    - Unification, the last Force of Will level: each fallen empire opposed to the ideology now
+      declares one war on all its followers, and the followers join as defenders. Check who
+      ends up in those wars (the player, if they adopted the rival's ideology).
+    - The ambition victory now counts only the Force of Will empire's own wars.
 
 ## Results
 
